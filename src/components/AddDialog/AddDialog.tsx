@@ -1,97 +1,97 @@
-import * as React from "react";
-import { nanoid } from "nanoid";
-import { Button, Fab } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import AddBoxProps from "../../types/AddBoxProps.tsx";
-import AddIcon from "@mui/icons-material/Add";
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	TextField,
+} from "@mui/material"
+import { nanoid } from "nanoid"
+import { useState } from "react"
+import type { ChangeEvent, FormEvent } from "react"
+import type AddBoxProps from "../../types/AddBoxProps.tsx"
+import { SeedPacketButton } from "../SeedPacketButton/index.tsx"
 
-const AddDialog: React.FC<AddBoxProps> = ({ addHabit }) => {
-  const [open, setOpen] = React.useState(false);
-  const [newHabitData, setNewHabitData] = React.useState<string>("");
+const AddDialog = ({ addHabit }: AddBoxProps) => {
+	const [open, setOpen] = useState(false)
+	const [newHabitData, setNewHabitData] = useState("")
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+	const handleClickOpen = () => {
+		setOpen(true)
+	}
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+	const handleClose = () => {
+		setOpen(false)
+	}
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewHabitData(e.target.value);
-  };
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setNewHabitData(e.target.value)
+	}
 
-  const submitForm = (
-    e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent
-  ) => {
-    if (newHabitData.trim()) {
-      e.preventDefault();
-      const habitId = nanoid(7);
-      addHabit(habitId, newHabitData);
-      setNewHabitData("");
-      handleClose();
-    }
-  };
+	const submitForm = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		if (newHabitData.trim()) {
+			const habitId = nanoid(7)
+			addHabit(habitId, newHabitData)
+			setNewHabitData("")
+			handleClose()
+		}
+	}
 
   return (
-    <React.Fragment>
-      <Fab
-        onClick={handleClickOpen}
-        aria-label="add"
-        sx={{
-          display: {
-            sm: "none",
-          },
-          position: {
-            xs: "fixed",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-          },
-        }}
-      >
-        <AddIcon />
-      </Fab>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          component: "form",
-          onSubmit: submitForm,
-        }}
-      >
-        <DialogTitle>Add a &#129365; !</DialogTitle>
-        <DialogContent>
-          <DialogContentText></DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            value={newHabitData}
-            onChange={handleInputChange}
-            fullWidth
-            variant="standard"
-            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === "Enter") {
-                submitForm(e);
-              }
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" onClick={handleClose}>
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
-  );
-};
+		<>
+			<SeedPacketButton
+				onClick={handleClickOpen}
+				aria-label='Open add habit dialog'
+				sx={{
+					display: { xs: "inline-flex", sm: "none" },
+					position: "fixed",
+					right: "8%",
+					bottom: "8%",
+					zIndex: 1200,
+				}}
+			/>
+			<Dialog
+				open={open}
+				onClose={handleClose}
+				aria-labelledby='add-habit-dialog-title'
+				sx={{
+					"& .MuiDialog-container": {
+						p: 2,
+					},
+					"& .MuiDialog-paper": {
+						m: 0,
+						width: "100%",
+						maxWidth: "none",
+						maxHeight: "none",
+						borderRadius: 2,
+					},
+				}}
+				PaperProps={{
+					component: "form",
+					onSubmit: submitForm,
+				}}
+			>
+				<DialogTitle id='add-habit-dialog-title'>Plant a 🥕!</DialogTitle>
+				<DialogContent>
+					<TextField
+						autoFocus
+						required
+						margin='dense'
+						value={newHabitData}
+						onChange={handleInputChange}
+						fullWidth
+						variant='standard'
+						inputProps={{ "aria-label": "Habit name" }}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleClose}>Cancel</Button>
+					<Button type='submit'>Add</Button>
+				</DialogActions>
+			</Dialog>
+		</>
+	)
+}
 
-export default AddDialog;
+export default AddDialog

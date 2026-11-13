@@ -7,7 +7,7 @@
     "jsx": "react-jsx", // React JSX support
     "esModuleInterop": true, // Interoperability with CommonJS
     "skipLibCheck": true, // Skip checking libraries
-    "moduleResolution": "Node", // Node-style resolution
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true, // Allow JSON imports
     "noUnusedLocals": true, // Disallow unused locals
     "noUnusedParameters": true, // Disallow unused parameters

@@ -1,138 +1,162 @@
-import * as React from "react";
-import { useState } from "react";
-import { useCards } from "../../contexts/CardsContext.tsx";
-import { IconButton, Paper } from "@mui/material";
-import Grid from "@mui/material/Grid2";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import ReplayCircleFilledIcon from "@mui/icons-material/ReplayCircleFilled";
-import AspectRatio from "@mui/joy/AspectRatio";
-import { SnackbarCloseReason } from "@mui/material/Snackbar";
-import TallySnackbar from "../../components/TallySnackbar/TallySnackbar";
+import UndoRoundedIcon from "@mui/icons-material/UndoRounded"
+import { Box, IconButton, Paper, Typography } from "@mui/material"
+import { useState } from "react"
+import type { SyntheticEvent } from "react"
+import type { SnackbarCloseReason } from "@mui/material/Snackbar"
+import TallySnackbar from "../TallySnackbar/TallySnackbar"
 
 interface CardProps {
-  text: string;
-  id: string;
-  isDone: boolean;
-  toggleDone: (id: string) => void;
-  deleteHabit: (id: string) => void;
+	text: string
+	id: string
+	isDone: boolean
+	toggleDone: (id: string) => void
+	deleteHabit: (id: string) => void
 }
 
 const Card = ({ text, id, isDone, toggleDone, deleteHabit }: CardProps) => {
-  const { doneCards, setDoneCards } = useCards();
-  const [snackOpen, setSnackOpen] = useState<boolean>(false);
+	const [snackOpen, setSnackOpen] = useState(false)
 
-  const handleDone = () => {
-    toggleDone(id);
-    if (!isDone) {
-      setDoneCards(doneCards + 1);
-    } else {
-      setDoneCards(doneCards - 1);
-    }
-    setSnackOpen(true);
-  };
+	const handleDone = () => {
+		if (isDone) {
+			toggleDone(id)
+			setSnackOpen(false)
+			return
+		}
+		toggleDone(id)
+		setSnackOpen(true)
+	}
 
-  const handleUndo = () => {
-    toggleDone(id);
-    setDoneCards(isDone ? doneCards + 1 : doneCards - 1);
-    setSnackOpen(false);
-  };
+	const handleUndo = () => {
+		toggleDone(id)
+		setSnackOpen(false)
+	}
 
-  const handleDelete = () => {
-    deleteHabit(id);
-    setSnackOpen(false);
-  };
+	const handleDelete = () => {
+		deleteHabit(id)
+		setSnackOpen(false)
+	}
 
-  const handleClose = (
-    _: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
-  ): void => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackOpen(false);
-  };
+	const handleSnackbarClose = (
+		_: SyntheticEvent | Event,
+		reason?: SnackbarCloseReason,
+	) => {
+		if (reason !== "clickaway") {
+			setSnackOpen(false)
+		}
+	}
 
-  return (
-    <>
-      <Paper
-        elevation={6}
-        sx={{
-          borderRadius: 3,
-          overflow: "hidden",
-        }}
-      >
-        <AspectRatio>
-          <Grid
-            container
-            direction="column"
-            justifyContent="space-between"
-            sx={{
-              position: "relative",
-              opacity: isDone ? 0.5 : 1,
-              backgroundColor: isDone ? "#d8e4bc" : "",
-            }}
-          >
-            <Grid>
-              <IconButton
-                onClick={handleDelete}
-                sx={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                }}
-              >
-                <RemoveCircleOutlineIcon />
-              </IconButton>
-            </Grid>
-            <Grid
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                justifyContent: "center",
-                //   outline: "auto",
-                alignItems: "center",
-                textAlign: "center",
-                paddingLeft: 4,
-                paddingRight: 4,
-                paddingTop: 4,
-              }}
-            >
-              {text}
-            </Grid>
-            <Grid
-              sx={{
-                paddingBottom: 1,
-              }}
-            >
-              <IconButton size="large" onClick={handleDone}>
-                {isDone ? (
-                  <ReplayCircleFilledIcon
-                    sx={{
-                      fontSize: 32,
-                      opacity: 1,
-                    }}
-                  />
-                ) : (
-                  <CheckCircleIcon
-                    sx={{
-                      fontSize: 32,
-                    }}
-                  />
-                )}
-              </IconButton>
-            </Grid>
-          </Grid>
-        </AspectRatio>
-      </Paper>
-      <TallySnackbar
-        snackOpen={snackOpen}
-        autoHideDuration={3000}
-        undoAction={handleUndo}
-        onClose={handleClose}
-        message={`You've earned another \u{1F955}! Only X left until you are a happy \u{1F407}.`}
-      />
-    </>
-  );
-};
-export default Card;
+	const emojiOutline = {
+		WebkitTextStroke: "1px #fff",
+		paintOrder: "stroke fill",
+	}
+
+	return (
+		<>
+			<Paper
+				elevation={isDone ? 0 : 6}
+				sx={{
+					width: "100%",
+					borderRadius: 3,
+					overflow: "hidden",
+					border: "3px solid #fff",
+					background:
+						isDone ? "transparent" : (
+							"linear-gradient(180deg, #794a2c 0%, #562e17 100%)"
+						),
+					color: isDone ? "#244b20" : "#f7f3eef7",
+				}}
+			>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						gap: 0.5,
+						width: "100%",
+						py: 1,
+					}}
+				>
+					<Typography
+						variant='body1'
+						sx={{
+							width: "100%",
+							px: 2,
+							textAlign: "start",
+							display: "-webkit-box",
+							WebkitLineClamp: 2,
+							WebkitBoxOrient: "vertical",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							wordBreak: "break-word",
+						}}
+					>
+						{text}
+					</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							px: 2,
+						}}
+					>
+						<IconButton
+							size='small'
+							onClick={handleDone}
+							aria-label={isDone ? "Undo completion" : "Mark complete"}
+						>
+							{isDone ?
+								<UndoRoundedIcon
+									sx={{
+										fontSize: "clamp(1rem, 5vw, 2rem)",
+										color: "#74c365",
+										filter:
+											"drop-shadow(1px 0 #fff) drop-shadow(-1px 0 #fff) drop-shadow(0 1px #fff) drop-shadow(0 -1px #fff)",
+									}}
+								/>
+							:	<Box
+									component='span'
+									sx={{
+										...emojiOutline,
+										fontSize: "clamp(1rem, 5vw, 2rem)",
+										lineHeight: 1,
+										filter:
+											"drop-shadow(1px 0 #fff) drop-shadow(-1px 0 #fff) drop-shadow(0 1px #fff) drop-shadow(0 -1px #fff)",
+									}}
+								>
+									🪏
+								</Box>
+							}
+						</IconButton>
+						<IconButton
+							size='small'
+							onClick={handleDelete}
+							aria-label='Delete habit'
+						>
+							<Box
+								component='span'
+								sx={{
+									...emojiOutline,
+									fontSize: "clamp(0.875rem, 4vw, 1.5rem)",
+									lineHeight: 1,
+									filter:
+										"drop-shadow(1px 0 #fff) drop-shadow(-1px 0 #fff) drop-shadow(0 1px #fff) drop-shadow(0 -1px #fff)",
+								}}
+							>
+								❌
+							</Box>
+						</IconButton>
+					</Box>
+				</Box>
+			</Paper>
+			<TallySnackbar
+				snackOpen={snackOpen}
+				autoHideDuration={4000}
+				message='You picked a carrot!'
+				undoAction={handleUndo}
+				onClose={handleSnackbarClose}
+			/>
+		</>
+	)
+}
+export default Card

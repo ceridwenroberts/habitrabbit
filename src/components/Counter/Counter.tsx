@@ -1,49 +1,100 @@
-import { useEffect } from "react";
-import { useCards } from "../../contexts/CardsContext.tsx";
-import Habit from "../../types/HabitInterface.tsx";
-import Grid from "@mui/material/Grid2";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material"
+import { useCards } from "../../contexts/useCards"
 
 const Counter = () => {
-  const { totalCards, setTotalCards, doneCards, setDoneCards } = useCards();
+	const { habits } = useCards()
 
-  useEffect(() => {
-    const storedHabits = JSON.parse(
-      localStorage.getItem("habits") || "[]"
-    ) as Habit[];
-    setTotalCards(storedHabits.length);
-    setDoneCards(
-      storedHabits.filter((habit: Habit): boolean => habit.isDone).length
-    );
-  }, []);
+	const done = habits.filter((habit) => habit.isDone).length
 
-  useEffect(() => {
-    localStorage.setItem("doneCards", JSON.stringify(doneCards));
-  }, [doneCards]);
+	return (
+		<>
+		
+			<Box
+				sx={{
+					display: "grid",
+					gridTemplateColumns: "1fr auto 1fr",
+					alignItems: "center",
+					width: "100%",
+				}}
+				role='img'
+				aria-label={`${done} of ${habits.length} habits completed`}
+			>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: ".3em",
+						fontSize: {
+							xs: "1.5em",
+							sm: "2em",
+						},
+						justifySelf: "end",
+					}}
+				>
+					{habits
+						.filter((habit) => !habit.isDone)
+						.map((_, i) => (
+							<Typography
+								variant='stickers'
+								component='span'
+								key={`seedling-${i}`}
+								sx={{
+									fontSize: {
+										xs: "1.2em",
+										sm: "2em",
+									},
+								}}
+							>
+								🌱
+							</Typography>
+						))}
+				</Box>
 
-  return (
-    <>
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-        sx={{
-          lineHeight: "40px",
-        }}
-      >
-        <Grid container spacing={1}>
-          <Grid>
-            <h3>&#129365;</h3>
-          </Grid>
-          <Grid>
-            <h3>
-              {totalCards}/{doneCards}
-            </h3>
-          </Grid>
-        </Grid>
-      </Typography>
-    </>
-  );
-};
+				<Typography
+					variant='h5'
+					sx={{
+						px: 2,
+						whiteSpace: "nowrap",
+					}}
+				>
+					{done}/{habits.length}
+				</Typography>
 
-export default Counter;
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: ".3em",
+						fontSize: {
+							xs: "1.5em",
+							sm: "2em",
+						},
+						justifySelf: "end",
+					}}
+				>
+					{habits
+						.filter((habit) => habit.isDone)
+						.map((_, i) => (
+							<Typography
+								variant='stickers'
+								component='span'
+								key={`carrot-${i}`}
+								sx={{
+									fontSize: {
+										xs: "0.7em",
+										sm: "2em",
+									},
+								}}
+							>
+								🥕
+							</Typography>
+						))}
+				</Box>
+			</Box>
+		</>
+	)
+}
+
+export default Counter
